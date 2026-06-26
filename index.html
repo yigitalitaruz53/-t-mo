@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="İTÜMOBİL">
+<title>İTÜMOBİL</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --blue-dark: #0a2d6e;
+    --blue-mid: #1a4db8;
+    --blue-light: #3a7bd5;
+    --red: #e8192c;
+    --green: #4caf50;
+    --orange: #ff6b00;
+    --gray-bg: #f0f2f5;
+    --white: #ffffff;
+    --text-dark: #1a1a2e;
+    --text-gray: #666;
+    --border: #e0e0e0;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+    background: var(--gray-bg);
+    color: var(--text-dark);
+    max-width: 430px;
+    margin: 0 auto;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* SCREENS */
+  .screen { display: none; flex-direction: column; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* HEADER */
+  .header {
+    background: var(--blue-dark);
+    padding: 14px 16px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    flex-shrink: 0;
+  }
+  .header-logo {
+    font-size: 20px; font-weight: 700; color: white;
+    letter-spacing: 0.5px; flex: 1; text-align: center;
+  }
+  .header-logo span { font-weight: 300; }
+  .header-left { width: 40px; }
+  .header-right { display: flex; align-items: center; gap: 14px; width: 40px; justify-content: flex-end; }
+  .back-btn {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.5);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: white; font-size: 14px;
+  }
+  .bell-wrap { position: relative; cursor: pointer; }
+  .bell-wrap svg { width: 22px; height: 22px; fill: none; stroke: white; stroke-width: 2; }
+  .bell-badge {
+    position: absolute; top: -5px; right: -6px;
+    background: var(--red); color: white;
+    font-size: 9px; font-weight: 700;
+    width: 16px; height: 16px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hamburger { cursor: pointer; display: flex; flex-direction: column; gap: 4px; }
+  .hamburger span { width: 22px; height: 2px; background: white; border-radius: 2px; display: block; }
+
+  /* HOME HERO */
+  .home-hero {
+    background: var(--blue-dark);
+    padding: 12px 16px 20px;
+    display: flex; align-items: center; gap: 14px;
+    flex-shrink: 0;
+  }
+  .avatar {
+    width: 60px; height: 60px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.4);
+    background: #ccc; overflow: hidden; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; color: #666;
+  }
+  .avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .hero-text { color: white; }
+  .hero-text .hi { font-size: 13px; opacity: 0.8; margin-bottom: 2px; }
+  .hero-text .name { font-size: 20px; font-weight: 700; }
+  .hero-text .id { font-size: 13px; opacity: 0.75; margin-top: 2px; }
+
+  /* CARD BALANCE BANNER */
+  .balance-banner {
+    background: var(--red);
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 10px;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .balance-banner svg { width: 28px; height: 28px; fill: none; stroke: white; stroke-width: 1.8; flex-shrink: 0; }
+  .balance-banner .bal-text { color: white; font-size: 13px; font-weight: 400; }
+  .balance-banner .bal-text strong { font-size: 15px; font-weight: 700; }
+
+  /* SCROLLABLE CONTENT */
+  .scroll-content { flex: 1; overflow-y: auto; padding-bottom: 20px; }
+
+  /* CARDS HORIZONTAL SCROLL */
+  .cards-row { padding: 16px 16px 0; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
+  .cards-row::-webkit-scrollbar { display: none; }
+  .info-card {
+    background: white; border-radius: 12px; padding: 14px 16px;
+    min-width: 260px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    flex-shrink: 0; cursor: pointer;
+  }
+  .info-card .card-date { font-size: 12px; color: var(--text-gray); text-align: right; margin-bottom: 8px; }
+  .info-card .card-title { color: var(--orange); font-size: 16px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .info-card .card-title svg { width: 20px; height: 20px; }
+  .info-card .card-desc { font-size: 13px; color: var(--text-gray); line-height: 1.4; }
+  .info-card .card-footer { text-align: right; margin-top: 10px; color: var(--orange); font-size: 13px; font-weight: 600; }
+
+  /* SECTION TITLE */
+  .section-title { font-size: 18px; font-weight: 700; padding: 16px 16px 8px; }
+
+  /* EVENT CARDS */
+  .events-row { padding: 0 16px; display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
+  .events-row::-webkit-scrollbar { display: none; }
+  .event-card {
+    background: white; border-radius: 10px; min-width: 260px;
+    flex-shrink: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    overflow: hidden; cursor: pointer;
+    border-bottom: 3px solid var(--blue-mid);
+  }
+  .event-card-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px 8px;
+  }
+  .event-cat { color: var(--blue-light); font-size: 13px; font-weight: 700; }
+  .event-date-badge {
+    background: var(--green); color: white;
+    border-radius: 6px; padding: 4px 10px;
+    font-size: 14px; font-weight: 700; text-align: center;
+    line-height: 1.1;
+  }
+  .event-date-badge span { font-size: 10px; display: block; }
+  .event-body { padding: 0 14px 12px; }
+  .event-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+  .event-sub { font-size: 12px; color: var(--text-gray); line-height: 1.4; }
+  .event-time { font-size: 12px; color: var(--text-gray); margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+  .current-tag { color: var(--green); font-weight: 600; }
+
+  /* SHORTCUT LIST */
+  .shortcut-list { padding: 16px 16px 0; display: flex; flex-direction: column; gap: 1px; }
+  .shortcut-item {
+    background: white; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+    cursor: pointer; border-radius: 8px; margin-bottom: 4px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: background 0.15s;
+  }
+  .shortcut-item:active { background: #f5f5f5; }
+  .shortcut-icon {
+    width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+    color: var(--blue-mid);
+    flex-shrink: 0;
+  }
+  .shortcut-icon svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+  .shortcut-text .s-title { font-size: 15px; font-weight: 600; }
+  .shortcut-text .s-sub { font-size: 12px; color: var(--text-gray); margin-top: 2px; }
+
+  /* FAB */
+  .fab {
+    position: fixed; bottom: 28px; right: 20px;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: var(--red); color: white;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(232,25,44,0.4);
+    cursor: pointer; z-index: 50; font-size: 22px;
+  }
+
+  /* SIDE MENU OVERLAY */
+  .menu-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    display: none;
+  }
+  .menu-overlay.open { display: block; }
+  .menu-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.4);
+  }
+  .menu-panel {
+    position: absolute; top: 0; right: 0; bottom: 0;
+    width: 85%; background: white;
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform 0.28s ease;
+    overflow-y: auto;
+  }
+  .menu-overlay.open .menu-panel { transform: translateX(0); }
+  .menu-user-header {
+    background: var(--blue-dark);
+    padding: 40px 20px 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    position: relative;
+  }
+  .menu-avatar {
+    width: 70px; height: 70px; border-radius: 50%;
+    border: 2.5px solid rgba(255,255,255,0.5);
+    background: #ccc; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; color: #666;
+  }
+  .menu-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .menu-name { color: white; font-size: 17px; font-weight: 700; }
+  .menu-email { color: rgba(255,255,255,0.7); font-size: 13px; }
+  .menu-logout-icon {
+    position: absolute; top: 14px; right: 14px;
+    color: rgba(255,255,255,0.7); font-size: 20px; cursor: pointer;
+  }
+  .menu-items { flex: 1; }
+  .menu-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 15px 20px; cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.12s;
+  }
+  .menu-item:active { background: #f5f8ff; }
+  .menu-item-icon { color: var(--blue-mid); width: 26px; display: flex; align-items: center; justify-content: center; }
+  .menu-item-icon svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.7; }
+  .menu-item-label { font-size: 15px; color: var(--text-dark); }
+
+  /* KEPLER PAGE */
+  .kepler-list { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .kepler-item {
+    border-radius: 8px; padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; background: white;
+  }
+  .kepler-item .k-label { font-size: 15px; font-weight: 600; }
+  .kepler-item .k-icon { font-size: 22px; }
+
+  /* DROPDOWN FORM SCREEN */
+  .form-card {
+    background: white; border-radius: 10px; margin: 16px;
+    overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+  }
+  .form-card-title { font-size: 15px; font-weight: 700; padding: 14px 16px 10px; }
+  .dropdown-row {
+    border-top: 1px solid #f0f0f0;
+    padding: 14px 16px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; background: white;
+  }
+  .dropdown-row:active { background: #f5f5f5; }
+  .dropdown-label { font-size: 14px; color: var(--text-dark); }
+  .dropdown-arrow { color: var(--blue-light); font-size: 16px; font-weight: 700; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.3);
+    display: none; align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: white; border-radius: 16px 16px 0 0;
+    width: 100%; max-height: 60vh; overflow-y: auto;
+    padding-bottom: 20px;
+  }
+  .modal-title { font-size: 16px; font-weight: 700; padding: 18px 20px 14px; text-align: center; border-bottom: 1px solid #f0f0f0; }
+  .modal-option {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 20px; cursor: pointer; border-bottom: 1px solid #f8f8f8;
+  }
+  .modal-option:active { background: #f5f5f5; }
+  .radio-circle {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid #ccc; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .radio-circle.selected { border-color: var(--blue-mid); }
+  .radio-circle.selected::after {
+    content: ''; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--blue-mid);
+  }
+  .modal-option-label { font-size: 15px; }
+
+  /* COURSES RESULT */
+  .course-result-card {
+    background: white; border-radius: 8px; margin: 0 16px 12px;
+    padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  }
+  .course-field { margin-bottom: 8px; }
+  .course-field-label { font-size: 12px; color: var(--blue-light); font-weight: 600; margin-bottom: 2px; }
+  .course-field-val { font-size: 14px; color: var(--text-dark); }
+
+  /* ATTENDANCE */
+  .att-summary { background: white; border-radius: 8px; margin: 0 16px 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .att-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid #f5f5f5; }
+  .att-row:last-child { border-bottom: none; }
+  .att-label { font-size: 14px; }
+  .att-val { font-size: 14px; font-weight: 600; }
+  .week-card { background: white; border-radius: 8px; margin: 0 16px 10px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .week-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .week-day { color: var(--blue-light); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .week-slots { display: flex; gap: 16px; }
+  .slot { text-align: center; }
+  .slot .slot-num { font-size: 12px; color: var(--text-gray); margin-bottom: 4px; }
+  .slot .slot-x { font-size: 20px; color: #ccc; }
+
+  /* PROFILE PAGE */
+  .profile-id-card {
+    background: white; border-radius: 10px; margin: 16px;
+    overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+  }
+  .id-card-header {
+    background: linear-gradient(135deg, #fff 0%, #e8ecf4 60%, var(--blue-dark) 100%);
+    padding: 16px; display: flex; gap: 12px; align-items: flex-start;
+    position: relative;
+  }
+  .id-card-header .id-logo { font-size: 26px; font-weight: 900; color: var(--blue-dark); letter-spacing: -1px; }
+  .id-card-photo {
+    width: 70px; height: 80px; border-radius: 6px;
+    background: #ddd; overflow: hidden; position: absolute; right: 16px; top: 14px;
+    display: flex; align-items: center; justify-content: center; font-size: 24px; color: #888;
+  }
+  .id-card-photo img { width: 100%; height: 100%; object-fit: cover; }
+  .id-info { padding: 12px 16px; }
+  .id-info .id-name { font-size: 16px; font-weight: 700; }
+  .id-info .id-num { font-size: 14px; color: var(--text-gray); margin-bottom: 4px; }
+  .id-info .id-dept { font-size: 13px; color: var(--text-gray); }
+  .id-card-footer {
+    background: linear-gradient(90deg, var(--blue-dark) 70%, #888 100%);
+    padding: 6px 16px;
+  }
+
+  /* BALANCE ROW IN PROFILE */
+  .balance-row { display: flex; margin: 0 16px 12px; gap: 8px; }
+  .bal-box {
+    flex: 1; border-radius: 8px; padding: 12px 14px;
+    font-size: 13px; font-weight: 600;
+  }
+  .bal-box.green { background: #4caf50; color: white; }
+  .bal-box.blue { background: var(--blue-light); color: white; text-align: right; }
+  .bal-box .bal-val { font-size: 16px; font-weight: 700; margin-top: 2px; }
+
+  /* PROFILE TABLE */
+  .profile-table { background: white; border-radius: 8px; margin: 0 16px 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  .pt-row { display: flex; border-bottom: 1px solid #f5f5f5; }
+  .pt-row:last-child { border-bottom: none; }
+  .pt-key { font-size: 13px; font-weight: 700; padding: 12px 14px; width: 110px; flex-shrink: 0; background: #fafafa; }
+  .pt-val { font-size: 13px; padding: 12px 14px; color: var(--text-dark); }
+  .logout-btn {
+    margin: 0 16px 16px; border: 2px solid var(--blue-mid);
+    border-radius: 8px; padding: 14px;
+    text-align: center; color: var(--blue-mid);
+    font-size: 15px; font-weight: 700; cursor: pointer;
+  }
+  .logout-btn:active { background: #f0f4ff; }
+
+  /* EMPTY STATE */
+  .empty-state { flex: 1; display: flex; align-items: center; justify-content: center; color: var(--text-gray); font-size: 14px; padding: 40px; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- ==================== HOME SCREEN ==================== -->
+<div class="screen active" id="screen-home">
+  <div class="header">
+    <div class="header-left"></div>
+    <div class="header-logo">İT<span>Ü</span>MOBİL</div>
+    <div class="header-right">
+      <div class="bell-wrap" onclick="goTo('screen-home')">
+        <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="bell-badge">4</div>
+      </div>
+      <div class="hamburger" onclick="openMenu()">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="home-hero">
+    <div class="avatar">👤</div>
+    <div class="hero-text">
+      <div class="hi">Hi</div>
+      <div class="name">Yiğit Ali Taruz</div>
+      <div class="id">820230134 (Öğrenci)</div>
+    </div>
+  </div>
+
+  <div class="balance-banner">
+    <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+    <div class="bal-text">Your Card Balance ₺ <strong>Bakiye sorgulanamadı.</strong></div>
+  </div>
+
+  <div class="scroll-content">
+    <div class="cards-row">
+      <div class="info-card">
+        <div class="card-date">26.06.2026</div>
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#ff6b00" stroke-width="2"><path d="M3 2h18v20H3z M7 6h10M7 10h10M7 14h6"/></svg>
+          Lunch Menu
+        </div>
+        <div class="card-desc">Nohutlu Ayran Çorbası, Etli Taze Fasulye, Şehriyeli Pirinç Pilavı, Kiraz, Biskü...</div>
+        <div class="card-footer">Cafeteria</div>
+      </div>
+      <div class="info-card">
+        <div class="card-date">26.06.2026</div>
+        <div class="card-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#9c27b0" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Dinner Menu
+        </div>
+        <div class="card-desc">Mercimek Çorbası, Sebzeli Tavuk, Bulgur Pilavı, Meyve...</div>
+        <div class="card-footer">Cafeteria</div>
+      </div>
+    </div>
+
+    <div class="section-title">Events</div>
+    <div class="events-row">
+      <div class="event-card">
+        <div class="event-card-header">
+          <span class="event-cat">Akademik</span>
+          <div class="event-date-badge">26<span>Jun</span></div>
+        </div>
+        <div class="event-body">
+          <div class="event-title">35. İTÜ Petrol ve Doğal Gaz Semineri ve Sergisi</div>
+          <div class="event-sub">35. İTÜ PETROL ve DOĞAL GAZ SEMİNERİ ve SERGİSİ</div>
+          <div class="event-time">🕐 June 26, 2026 &nbsp;<span class="current-tag">Current Event ✓</span></div>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-card-header">
+          <span class="event-cat">Akademik</span>
+          <div class="event-date-badge" style="background:#1a4db8">17<span>Jun</span></div>
+        </div>
+        <div class="event-body">
+          <div class="event-title">Dijital Oyun Geliştirme</div>
+          <div class="event-sub">İstanbul Teknik Üniversitesi Uygulama ve...</div>
+          <div class="event-time">🕐 June 17, 2026</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="shortcut-list">
+      <div class="shortcut-item" onclick="goTo('screen-profile')">
+        <div class="shortcut-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+        <div class="shortcut-text">
+          <div class="s-title">Profile</div>
+          <div class="s-sub">You can find your profile information here.</div>
+        </div>
+      </div>
+      <div class="shortcut-item" onclick="alert('Services sayfası')">
+        <div class="shortcut-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+        </div>
+        <div class="shortcut-text">
+          <div class="s-title">Services</div>
+          <div class="s-sub">You can access to ITU Portal service here.</div>
+        </div>
+      </div>
+      <div class="shortcut-item" onclick="alert('Pharmacy sayfası')">
+        <div class="shortcut-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><text x="12" y="17" font-size="11" font-weight="800" fill="#1a4db8" text-anchor="middle" stroke="none">E</text></svg>
+        </div>
+        <div class="shortcut-text">
+          <div class="s-title">Pharmacy</div>
+          <div class="s-sub">You can view pharmacies close to campuses.</div>
+        </div>
+      </div>
+      <div class="shortcut-item" onclick="alert('Add Shortcut')">
+        <div class="shortcut-icon">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </div>
+        <div class="shortcut-text">
+          <div class="s-title">Add Shortcut</div>
+          <div class="s-sub">You can add shortcut here.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fab">⚠️</div>
+</div>
+
+<!-- ==================== MENU OVERLAY ==================== -->
+<div class="menu-overlay" id="menu-overlay">
+  <div class="menu-backdrop" onclick="closeMenu()"></div>
+  <div class="menu-panel">
+    <div class="menu-user-header">
+      <div class="menu-logout-icon" onclick="closeMenu()">↩</div>
+      <div class="menu-avatar">👤</div>
+      <div class="menu-name">Yiğit Ali Taruz</div>
+      <div class="menu-email">taruz23@itu.edu.tr</div>
+    </div>
+    <div class="menu-items">
+      <div class="menu-item" onclick="menuGo('screen-profile')">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></div>
+        <div class="menu-item-label">Profile</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div class="menu-item-label">Digital Business Card</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8.5 8.5c1-2.5 5-2.5 5 0s-2.5 2-2.5 3.5"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg></div>
+        <div class="menu-item-label">İTÜ Webpage</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><polygon points="12 2 15 9 22 9 17 14 19 21 12 17 5 21 7 14 2 9 9 9"/></svg></div>
+        <div class="menu-item-label">İTÜ 250th Anniversary</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M3 2h18v20H3z M7 7h10M7 12h10M7 17h6"/></svg></div>
+        <div class="menu-item-label">Cafeteria</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="22" height="16" rx="2"/><path d="M1 9h22M5 15h3M16 15h3"/></svg></div>
+        <div class="menu-item-label">Shuttle</div>
+      </div>
+      <div class="menu-item" onclick="menuGo('screen-kepler')">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="9" x2="9" y2="21"/></svg></div>
+        <div class="menu-item-label">Kepler ÖBS</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/></svg></div>
+        <div class="menu-item-label">Ninova</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg></div>
+        <div class="menu-item-label">Radyo</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="menu-item-label">Emergency</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg></div>
+        <div class="menu-item-label">Weather Forecast</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+        <div class="menu-item-label">Maps</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></div>
+        <div class="menu-item-label">İTÜ Directory</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg></div>
+        <div class="menu-item-label">Library</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div class="menu-item-label">Webmail</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="menu-item-label">İTÜ Assistance</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+        <div class="menu-item-label">Notifications</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></div>
+        <div class="menu-item-label">Prospective Student</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><text x="12" y="17" font-size="10" font-weight="800" fill="#1a4db8" text-anchor="middle" stroke="none">E</text></svg></div>
+        <div class="menu-item-label">Pharmacy</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>
+        <div class="menu-item-label">Services</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <div class="menu-item-label">BİDB</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/></svg></div>
+        <div class="menu-item-label">Graduated</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+        <div class="menu-item-label">About Us</div>
+      </div>
+      <div class="menu-item" onclick="closeMenu()">
+        <div class="menu-item-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div>
+        <div class="menu-item-label">Settings</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== PROFILE SCREEN ==================== -->
+<div class="screen" id="screen-profile">
+  <div class="header">
+    <div class="header-left"><div class="back-btn" onclick="goBack()">←</div></div>
+    <div class="header-logo">İT<span>Ü</span>MOBİL</div>
+    <div class="header-right">
+      <div class="bell-wrap"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><div class="bell-badge">4</div></div>
+      <div class="hamburger" onclick="openMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="profile-id-card">
+      <div class="id-card-header">
+        <div>
+          <div class="id-logo">İTÜ</div>
+          <div style="font-size:9px;color:#666;margin-top:2px">İSTANBUL TEKNİK ÜNİVERSİTESİ</div>
+        </div>
+        <div class="id-card-photo">👤</div>
+      </div>
+      <div class="id-info">
+        <div class="id-name">Yiğit Ali Taruz</div>
+        <div class="id-num">820230134</div>
+        <div class="id-dept">Maritime Trans.Management Eng.</div>
+        <div class="id-dept">Student</div>
+      </div>
+      <div class="id-card-footer" style="height:10px"></div>
+    </div>
+
+    <div class="balance-row">
+      <div class="bal-box green">
+        <div>Card Balance</div>
+        <div class="bal-val">₺ Bakiye sorgulanamadı</div>
+      </div>
+      <div class="bal-box blue">
+        <div>İTÜ Cloud Usage</div>
+        <div class="bal-val">0.1%</div>
+      </div>
+    </div>
+
+    <div class="profile-table">
+      <div class="pt-row"><div class="pt-key">İTÜ Number</div><div class="pt-val">820230134</div></div>
+      <div class="pt-row"><div class="pt-key">Username</div><div class="pt-val">taruz23</div></div>
+      <div class="pt-row"><div class="pt-key">E-Mail</div><div class="pt-val">taruz23@itu.edu.tr</div></div>
+      <div class="pt-row"><div class="pt-key">Unit</div><div class="pt-val">Maritime Trans.Management Eng.</div></div>
+    </div>
+
+    <div class="logout-btn">Logout</div>
+  </div>
+</div>
+
+<!-- ==================== KEPLER ÖBS SCREEN ==================== -->
+<div class="screen" id="screen-kepler">
+  <div class="header">
+    <div class="header-left"><div class="back-btn" onclick="goBack()">←</div></div>
+    <div class="header-logo">İT<span>Ü</span>MOBİL</div>
+    <div class="header-right">
+      <div class="bell-wrap"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><div class="bell-badge">4</div></div>
+      <div class="hamburger" onclick="openMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="kepler-list">
+      <div class="kepler-item" style="border:2px solid #ff9800;color:#ff9800" onclick="goTo('screen-courses')">
+        <span class="k-label" style="color:#ff9800">Courses</span>
+        <span class="k-icon">👥</span>
+      </div>
+      <div class="kepler-item" style="border:2px solid #4caf50;color:#4caf50" onclick="goTo('screen-termgrades')">
+        <span class="k-label" style="color:#4caf50">Term Grades</span>
+        <span class="k-icon">📋</span>
+      </div>
+      <div class="kepler-item" style="border:2px solid #e8192c;color:#e8192c" onclick="goTo('screen-endgrades')">
+        <span class="k-label" style="color:#e8192c">End of Term Grades</span>
+        <span class="k-icon">📋</span>
+      </div>
+      <div class="kepler-item" style="border:2px solid #1a4db8;color:#1a4db8" onclick="goTo('screen-finals')">
+        <span class="k-label" style="color:#1a4db8">Final Exams Schedule</span>
+        <span class="k-icon">📅</span>
+      </div>
+      <div class="kepler-item" style="border:2px solid #4caf50;color:#4caf50" onclick="goTo('screen-attendance')">
+        <span class="k-label" style="color:#4caf50">Class Attendance Information</span>
+        <span class="k-icon">✅</span>
+      </div>
+      <div class="kepler-item" style="border:2px solid #9c27b0;color:#9c27b0" onclick="alert('SİS Website açılıyor...')">
+        <span class="k-label" style="color:#9c27b0">SİS Website</span>
+        <span class="k-icon">🖥️</span>
+      </div>
+      <div class="kepler-item" style="border:2px solid #1a4db8;color:#1a4db8" onclick="alert('Academic Advisor Info')">
+        <span class="k-label" style="color:#1a4db8">Academic Advisor Info</span>
+        <span class="k-icon">👨‍🏫</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== COURSES SCREEN ==================== -->
+<div class="screen" id="screen-courses">
+  <div class="header">
+    <div class="header-left"><div class="back-btn" onclick="goBack()">←</div></div>
+    <div class="header-logo">İT<span>Ü</span>MOBİL</div>
+    <div class="header-right">
+      <div class="bell-wrap"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><div class="bell-badge">4</div></div>
+      <div class="hamburger" onclick="openMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="form-card">
+      <div class="form-card-title">Courses</div>
+      <div class="dropdown-row">
+        <span class="dropdown-label">Student (820230134)</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+      <div class="dropdown-row" onclick="openTermModal('courses')">
+        <span class="dropdown-label" id="courses-term-label">Select Term</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+    </div>
+    <div id="courses-result"></div>
+  </div>
+</div>
+
+<!-- ==================== TERM GRADES SCREEN ==================== -->
+<div class="screen" id="screen-termgrades">
+  <div class="header">
+    <div class="header-left"><div class="back-btn" onclick="goBack()">←</div></div>
+    <div class="header-logo">İT<span>Ü</span>MOBİL</div>
+    <div class="header-right">
+      <div class="bell-wrap"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><div class="bell-badge">4</div></div>
+      <div class="hamburger" onclick="openMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="form-card">
+      <div class="form-card-title">Term Grades</div>
+      <div class="dropdown-row">
+        <span class="dropdown-label">Student (820230134)</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+      <div class="dropdown-row" onclick="openTermModal('termgrades')">
+        <span class="dropdown-label" id="termgrades-term-label">Select Term</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+      <div class="dropdown-row" id="termgrades-course-row" style="display:none" onclick="openCourseModal('termgrades')">
+        <span class="dropdown-label" id="termgrades-course-label">Select Course</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+    </div>
+    <div id="termgrades-result"></div>
+  </div>
+</div>
+
+<!-- ==================== END OF TERM GRADES SCREEN ==================== -->
+<div class="screen" id="screen-endgrades">
+  <div class="header">
+    <div class="header-left"><div class="back-btn" onclick="goBack()">←</div></div>
+    <div class="header-logo">İT<span>Ü</span>MOBİL</div>
+    <div class="header-right">
+      <div class="bell-wrap"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><div class="bell-badge">4</div></div>
+      <div class="hamburger" onclick="openMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="form-card">
+      <div class="form-card-title">End of Term Grades</div>
+      <div class="dropdown-row">
+        <span class="dropdown-label">Student (820230134)</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+      <div class="dropdown-row" onclick="openTermModal('endgrades')">
+        <span class="dropdown-label" id="endgrades-term-label">Select Term</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+    </div>
+    <div id="endgrades-result"></div>
+  </div>
+</div>
+
+<!-- ==================== FINAL EXAMS SCREEN ==================== -->
+<div class="screen" id="screen-finals">
+  <div class="header">
+    <div class="header-left"><div class="back-btn" onclick="goBack()">←</div></div>
+    <div class="header-logo">İT<span>Ü</span>MOBİL</div>
+    <div class="header-right">
+      <div class="bell-wrap"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><div class="bell-badge">4</div></div>
+      <div class="hamburger" onclick="openMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="form-card">
+      <div class="form-card-title">Final Exams Schedule</div>
+      <div class="dropdown-row">
+        <span class="dropdown-label">Student (820230134)</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+      <div class="dropdown-row" onclick="openTermModal('finals')">
+        <span class="dropdown-label" id="finals-term-label">Select Term</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+    </div>
+    <div id="finals-result"></div>
+  </div>
+</div>
+
+<!-- ==================== ATTENDANCE SCREEN ==================== -->
+<div class="screen" id="screen-attendance">
+  <div class="header">
+    <div class="header-left"><div class="back-btn" onclick="goBack()">←</div></div>
+    <div class="header-logo">İT<span>Ü</span>MOBİL</div>
+    <div class="header-right">
+      <div class="bell-wrap"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><div class="bell-badge">4</div></div>
+      <div class="hamburger" onclick="openMenu()"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="form-card">
+      <div class="form-card-title">Class Attendance Information</div>
+      <div class="dropdown-row">
+        <span class="dropdown-label">Student (820230134)</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+      <div class="dropdown-row" onclick="openTermModal('attendance')">
+        <span class="dropdown-label" id="attendance-term-label">Select Term</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+      <div class="dropdown-row" id="attendance-course-row" style="display:none" onclick="openCourseModal('attendance')">
+        <span class="dropdown-label" id="attendance-course-label">Select Course</span>
+        <span class="dropdown-arrow">∨</span>
+      </div>
+    </div>
+    <div id="attendance-result"></div>
+  </div>
+</div>
+
+<!-- ==================== TERM MODAL ==================== -->
+<div class="modal-overlay" id="term-modal">
+  <div class="modal-box">
+    <div class="modal-title">Please Choose</div>
+    <div class="modal-option" onclick="selectTerm('2025-2026 - Spring Semester')">
+      <div class="radio-circle" id="radio-spring"></div>
+      <span class="modal-option-label">2025-2026 - Spring Semester</span>
+    </div>
+    <div class="modal-option" onclick="selectTerm('2025-2026 - Fall Semester')">
+      <div class="radio-circle" id="radio-fall"></div>
+      <span class="modal-option-label">2025-2026 - Fall Semester</span>
+    </div>
+    <div class="modal-option" onclick="selectTerm('2024-2025 - Spring Semester')">
+      <div class="radio-circle" id="radio-old"></div>
+      <span class="modal-option-label">2024-2025 - Spring Semester</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== COURSE MODAL ==================== -->
+<div class="modal-overlay" id="course-modal">
+  <div class="modal-box">
+    <div class="modal-title">Please Choose</div>
+    <div class="modal-option" onclick="selectCourse('24805 - Maritime Safety II')">
+      <div class="radio-circle" id="radio-c1"></div>
+      <span class="modal-option-label">24805 - Maritime Safety II</span>
+    </div>
+    <div class="modal-option" onclick="selectCourse('24799 - Watchkeeping I')">
+      <div class="radio-circle" id="radio-c2"></div>
+      <span class="modal-option-label">24799 - Watchkeeping I</span>
+    </div>
+    <div class="modal-option" onclick="selectCourse('24798 - Introduction to Navigation')">
+      <div class="radio-circle" id="radio-c3"></div>
+      <span class="modal-option-label">24798 - Introduction to Navigation</span>
+    </div>
+    <div class="modal-option" onclick="selectCourse('24848 - Maritime Economics')">
+      <div class="radio-circle" id="radio-c4"></div>
+      <span class="modal-option-label">24848 - Maritime Economics</span>
+    </div>
+  </div>
+</div>
+
+<script>
+let currentScreen = 'screen-home';
+let screenHistory = [];
+let currentTermContext = null;
+let currentCourseContext = null;
+let selectedTerm = null;
+let selectedCourse = null;
+
+const courses = [
+  { crn:'24805', code:'DFH', num:'112E', name:'Maritime Safety II', time:'Friday 14:00-16:59 / Tuzla, Denizatı Eğitim Binası' },
+  { crn:'24799', code:'DUI', num:'112E', name:'Watchkeeping I', time:'Wednesday 09:00-11:59 / Tuzla, Denizatı Eğitim Binası' },
+  { crn:'24798', code:'DUI', num:'101E', name:'Introduction to Navigation', time:'Thursday 10:00-12:59 / Tuzla, Denizatı Eğitim Binası' },
+  { crn:'24848', code:'DEN', num:'202E', name:'Maritime Economics', time:'Tuesday 13:00-14:59 / Tuzla, Denizatı Eğitim Binası' },
+];
+
+function goTo(screen) {
+  if (currentScreen === screen) return;
+  screenHistory.push(currentScreen);
+  document.getElementById(currentScreen).classList.remove('active');
+  document.getElementById(screen).classList.add('active');
+  currentScreen = screen;
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  if (screenHistory.length === 0) return;
+  const prev = screenHistory.pop();
+  document.getElementById(currentScreen).classList.remove('active');
+  document.getElementById(prev).classList.add('active');
+  currentScreen = prev;
+}
+
+function openMenu() {
+  document.getElementById('menu-overlay').classList.add('open');
+}
+function closeMenu() {
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+function menuGo(screen) {
+  closeMenu();
+  setTimeout(() => goTo(screen), 200);
+}
+
+function openTermModal(context) {
+  currentTermContext = context;
+  document.querySelectorAll('#term-modal .radio-circle').forEach(r => r.classList.remove('selected'));
+  document.getElementById('term-modal').classList.add('open');
+}
+
+function selectTerm(term) {
+  selectedTerm = term;
+  document.getElementById('term-modal').classList.remove('open');
+  const ctx = currentTermContext;
+  const label = document.getElementById(ctx + '-term-label');
+  if (label) label.textContent = term;
+
+  if (ctx === 'courses') renderCourses();
+  if (ctx === 'termgrades') {
+    document.getElementById('termgrades-course-row').style.display = 'flex';
+    document.getElementById('termgrades-result').innerHTML = '';
+    document.getElementById('termgrades-course-label').textContent = 'Select Course';
+  }
+  if (ctx === 'endgrades') renderEndGrades();
+  if (ctx === 'finals') renderFinals();
+  if (ctx === 'attendance') {
+    document.getElementById('attendance-course-row').style.display = 'flex';
+    document.getElementById('attendance-result').innerHTML = '';
+    document.getElementById('attendance-course-label').textContent = 'Select Course';
+  }
+}
+
+function openCourseModal(context) {
+  currentCourseContext = context;
+  document.getElementById('course-modal').classList.add('open');
+}
+
+function selectCourse(course) {
+  selectedCourse = course;
+  document.getElementById('course-modal').classList.remove('open');
+  const ctx = currentCourseContext;
+  const label = document.getElementById(ctx + '-course-label');
+  if (label) label.textContent = course;
+
+  if (ctx === 'termgrades') renderTermGrades(course);
+  if (ctx === 'attendance') renderAttendance(course);
+}
+
+function renderCourses() {
+  const el = document.getElementById('courses-result');
+  el.innerHTML = courses.map(c => `
+    <div class="course-result-card">
+      <div class="course-field"><div class="course-field-label">Semester</div><div class="course-field-val">202620</div></div>
+      <div class="course-field"><div class="course-field-label">CRN</div><div class="course-field-val">${c.crn}</div></div>
+      <div class="course-field"><div class="course-field-label">Course Code</div><div class="course-field-val">${c.code}</div></div>
+      <div class="course-field"><div class="course-field-label">Course Number</div><div class="course-field-val">${c.num}</div></div>
+      <div class="course-field"><div class="course-field-label">Course Name</div><div class="course-field-val">${c.name}</div></div>
+      <div class="course-field"><div class="course-field-label">Time and Place</div><div class="course-field-val">${c.time}</div></div>
+    </div>
+  `).join('');
+}
+
+function renderTermGrades(courseName) {
+  const el = document.getElementById('termgrades-result');
+  const c = courses.find(x => courseName.includes(x.name)) || courses[0];
+  el.innerHTML = `
+    <div class="course-result-card">
+      <div class="course-field"><div class="course-field-label">Course</div><div class="course-field-val">${c.crn} - ${c.name}</div></div>
+      <div class="course-field"><div class="course-field-label">Midterm 1</div><div class="course-field-val">72</div></div>
+      <div class="course-field"><div class="course-field-label">Midterm 2</div><div class="course-field-val">68</div></div>
+      <div class="course-field"><div class="course-field-label">Quiz Average</div><div class="course-field-val">80</div></div>
+      <div class="course-field"><div class="course-field-label">Final</div><div class="course-field-val">—</div></div>
+      <div class="course-field"><div class="course-field-label">Letter Grade</div><div class="course-field-val">—</div></div>
+    </div>`;
+}
+
+function renderEndGrades() {
+  const el = document.getElementById('endgrades-result');
+  el.innerHTML = courses.map(c => `
+    <div class="course-result-card">
+      <div class="course-field"><div class="course-field-label">Course</div><div class="course-field-val">${c.crn} - ${c.name}</div></div>
+      <div class="course-field"><div class="course-field-label">Letter Grade</div><div class="course-field-val">BB</div></div>
+      <div class="course-field"><div class="course-field-label">Grade Point</div><div class="course-field-val">3.00</div></div>
+    </div>`).join('');
+}
+
+function renderFinals() {
+  const el = document.getElementById('finals-result');
+  el.innerHTML = courses.map((c, i) => {
+    const days = ['June 30', 'July 1', 'July 2', 'July 3'];
+    return `<div class="course-result-card">
+      <div class="course-field"><div class="course-field-label">Course</div><div class="course-field-val">${c.crn} - ${c.name}</div></div>
+      <div class="course-field"><div class="course-field-label">Date</div><div class="course-field-val">${days[i]}, 2026</div></div>
+      <div class="course-field"><div class="course-field-label">Time</div><div class="course-field-val">09:00 - 11:00</div></div>
+      <div class="course-field"><div class="course-field-label">Location</div><div class="course-field-val">Tuzla, Sınav Salonu ${i+1}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function renderAttendance(courseName) {
+  const el = document.getElementById('attendance-result');
+  const c = courses.find(x => courseName.includes(x.name)) || courses[2];
+  const isNav = courseName.includes('Navigation');
+  el.innerHTML = `
+    <div class="att-summary">
+      <div class="att-row"><div class="att-label">General Attendance</div><div class="att-val">%${isNav ? '43.905' : '65.000'}</div></div>
+      <div class="att-row"><div class="att-label">Attendance</div><div class="att-val">${isNav ? '0 / 42 (%0.0)' : '18 / 42 (%42.9)'}</div></div>
+    </div>
+    ${[14,13,12,11,10].map(w => `
+    <div class="week-card">
+      <div class="week-title">${w}. Week</div>
+      <div class="week-day">Thursday</div>
+      <div class="week-slots">
+        ${[1,2,3].map(s => `<div class="slot"><div class="slot-num">${s}.</div><div class="slot-x">⊗</div></div>`).join('')}
+      </div>
+    </div>`).join('')}`;
+}
+
+// Close modals on backdrop click
+document.getElementById('term-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+document.getElementById('course-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+</script>
+</body>
+</html>
